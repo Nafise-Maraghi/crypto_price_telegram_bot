@@ -85,6 +85,10 @@ def message_handler_function(update, context):
         # context.bot.send_message(chat_id=update.effective_chat.id, text=output)
 
 
+def error_handler_function(update, context):
+    print(f"Update: {update} caused error: {context.error}")
+
+
 coin = [
     "Bitcoin (BTC)",
     "Ethereum (ETH)",
@@ -109,7 +113,7 @@ my_dispatcher.add_handler(CommandHandler("start", start_function))
 my_dispatcher.add_handler(MessageHandler(Filters.text, message_handler_function))
 
 # Error Handling if any
-# my_dispacher.add_error_handler()
+my_dispatcher.add_error_handler(error_handler_function)
 
 # Starting the bot using polling() function and check for messages every sec
 updater.start_polling(1.0)
