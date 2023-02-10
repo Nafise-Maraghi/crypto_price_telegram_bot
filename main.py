@@ -6,7 +6,7 @@ from key import token
 
 
 # start(Boolian): is it a "/start" command or not
-def crypto_list(start, update, context):
+def main_menu(start, update, context):
     buttons = [
         [KeyboardButton("Bitcoin (BTC)")], 
         [KeyboardButton("Ethereum (ETH)")], 
@@ -30,7 +30,7 @@ def crypto_list(start, update, context):
 
 
 def start_function(update, context):
-    crypto_list(True, update, context)
+    main_menu(True, update, context)
 
 
 # Connecting our app with the Telegram API Key and using the context
