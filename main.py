@@ -38,8 +38,6 @@ def message_handler_function(update, context):
 
     if received_message in coin:
         selected_symbol = ""
-        selected_exchange = "BINANCE"
-        selected_screener = ""
 
         if received_message == coin[0]:
             selected_symbol = "BTCUSD"
@@ -71,7 +69,20 @@ def message_handler_function(update, context):
         elif received_message == coin[9]:
             selected_symbol = "SOLUSD"
         
-        context.bot.send_message(chat_id=update.effective_chat.id, text=selected_symbol)
+        handler = TA_Handler(
+            symbol = selected_symbol,
+            exchange = "BINANCE",
+            screener = "crypto",
+            interval = "1m"
+        )
+        
+        analysis = handler.get_analysis()
+        opening = analysis.indicators["open"]
+        closing = analysis.indicators["close"]
+        lowest = analysis.indicators["low"]
+        highest = analysis.indicators["high"]
+
+        # context.bot.send_message(chat_id=update.effective_chat.id, text=output)
 
 
 coin = [
