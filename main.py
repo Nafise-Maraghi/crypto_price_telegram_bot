@@ -31,6 +31,7 @@ def main_menu(start, update, context):
 
 def select_timeframe(update, context):
     buttons = [
+        [KeyboardButton("Back ⬅️")], 
         [KeyboardButton(timeframe[0])], 
         [KeyboardButton(timeframe[1])], 
         [KeyboardButton(timeframe[2])], 
@@ -60,6 +61,7 @@ def message_handler_function(update, context):
         for i in range(len(coin)):
             if received_message == coin[i]:
                 selected_symbol = coin_symbol[i]
+                break
 
         select_timeframe(update, context)
         
@@ -87,6 +89,11 @@ def message_handler_function(update, context):
             if received_message == timeframe[i]:
                 selected_timeframe = time_symbol[i]
                 print(selected_timeframe)
+                break
+    
+    # if 'back' button selected
+    else:
+        main_menu(False, update, context)
 
 
 def error_handler_function(update, context):
