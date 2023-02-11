@@ -21,11 +21,29 @@ def main_menu(start, update, context):
         ]
     
     if start:
-        message = "Hello and welcome!\nPlease choose a cryptocurrency 🪙:"
+        message = "Hello and welcome!\nPlease select a cryptocurrency 🪙:"
 
     else:
-        message = "Please choose a cryptocurrency 🪙:"
+        message = "Please select a cryptocurrency 🪙:"
 
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=ReplyKeyboardMarkup(buttons))
+
+
+def select_timeframe(update, context):
+    buttons = [
+        [KeyboardButton(timeframe[0])], 
+        [KeyboardButton(timeframe[1])], 
+        [KeyboardButton(timeframe[2])], 
+        [KeyboardButton(timeframe[3])], 
+        [KeyboardButton(timeframe[4])], 
+        [KeyboardButton(timeframe[5])], 
+        [KeyboardButton(timeframe[6])], 
+        [KeyboardButton(timeframe[7])], 
+        [KeyboardButton(timeframe[8])], 
+        [KeyboardButton(timeframe[9])], 
+        ]
+
+    message = "Please select a timeframe ⌛:"
     context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=ReplyKeyboardMarkup(buttons))
 
 
@@ -39,55 +57,40 @@ def message_handler_function(update, context):
     if received_message in coin:
         selected_symbol = ""
 
-        if received_message == coin[0]:
-            selected_symbol = "BTCUSD"
+        for i in range(len(coin)):
+            if received_message == coin[i]:
+                selected_symbol = coin_symbol[i]
 
-        elif received_message == coin[1]:
-            selected_symbol = "ETHUSD"
-
-        elif received_message == coin[2]:
-            selected_symbol = "USDTUSD"
-
-        elif received_message == coin[3]:
-            selected_symbol = "BNBUSD"     
-
-        elif received_message == coin[4]:
-            selected_symbol = "USDCUSD"  
-
-        elif received_message == coin[5]:
-            selected_symbol = "XRPUSD"  
-
-        elif received_message == coin[6]:
-            selected_symbol = "BUSDUSD"  
-
-        elif received_message == coin[7]:
-            selected_symbol = "ADAUSD"  
-
-        elif received_message == coin[8]:
-            selected_symbol = "DOGEUSD"  
-
-        elif received_message == coin[9]:
-            selected_symbol = "SOLUSD"
+        select_timeframe(update, context)
         
-        handler = TA_Handler(
-            symbol = selected_symbol,
-            exchange = "BINANCE",
-            screener = "crypto",
-            interval = "1m"
-        )
+        # handler = TA_Handler(
+        #     symbol = selected_symbol,
+        #     exchange = "BINANCE",
+        #     screener = "crypto",
+        #     interval = "1m"
+        # )
         
-        analysis = handler.get_analysis()
-        opening = analysis.indicators["open"]
-        closing = analysis.indicators["close"]
-        lowest = analysis.indicators["low"]
-        highest = analysis.indicators["high"]
+        # analysis = handler.get_analysis()
+        # opening = analysis.indicators["open"]
+        # closing = analysis.indicators["close"]
+        # lowest = analysis.indicators["low"]
+        # highest = analysis.indicators["high"]
+
+
 
         # context.bot.send_message(chat_id=update.effective_chat.id, text=output)
+
+    elif received_message in timeframe:
+        selected_timeframe = ""
+
+        for i in range(len(timeframe)):
+            if received_message == timeframe[i]:
+                selected_timeframe = time_symbol[i]
+                print(selected_timeframe)
 
 
 def error_handler_function(update, context):
     print(f"Update: {update} caused error: {context.error}")
-
 
 coin = [
     "Bitcoin (BTC)",
@@ -100,6 +103,45 @@ coin = [
     "Cardano (ADA)",
     "Dogecoin (DOGE)",
     "Solana (SOL)"
+]
+
+coin_symbol = [
+    "BTCUSD",
+    "ETHUSD",
+    "USDTUSD",
+    "BNBUSD",
+    "USDCUSD",
+    "XRPUSD",
+    "BUSDUSD",
+    "ADAUSD",
+    "DOGEUSD",
+    "SOLUSD"
+]
+
+timeframe = [
+    "1 Minute",
+    "5 Minutes",
+    "15 Minutes",
+    "30 Minutes",
+    "1 Hour",
+    "2 Hours",
+    "4 Hours",
+    "1 Day",
+    "1 Week",
+    "1 Month"
+]
+
+time_symbol = [
+    "1m",
+    "5m",
+    "15m",
+    "30m",
+    "1h",
+    "2h",
+    "4h",
+    "1d",
+    "1W",
+    "1M"
 ]
 
 # Connecting our app with the Telegram API Key and using the context
