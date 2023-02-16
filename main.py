@@ -1,3 +1,4 @@
+from datetime import timedelta
 from telegram import *
 from telegram.ext import *
 from tradingview_ta import TA_Handler, Interval, Exchange
@@ -48,11 +49,46 @@ def select_timeframe(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=ReplyKeyboardMarkup(buttons))
 
 
+def time_calc(to_time, interval):
+    if interval == time_symbol[0]:
+        from_time = to_time - timedelta(minutes=1)
+
+    elif interval == time_symbol[1]:
+        from_time = to_time - timedelta(minutes=5)
+
+    elif interval == time_symbol[2]:
+        from_time = to_time - timedelta(minutes=15)
+
+    elif interval == time_symbol[3]:
+        from_time = to_time - timedelta(minutes=30)
+
+    elif interval == time_symbol[4]:
+        from_time = to_time - timedelta(hours=1)
+
+    elif interval == time_symbol[5]:
+        from_time = to_time - timedelta(hours=2)
+
+    elif interval == time_symbol[6]:
+        from_time = to_time - timedelta(hours=4)
+
+    elif interval == time_symbol[7]:
+        from_time = to_time - timedelta(days=1)
+
+    elif interval == time_symbol[8]:
+        from_time = to_time - timedelta(days=7)
+
+    elif interval == time_symbol[9]:
+        from_time = to_time - timedelta(days=30)
+    
+    return from_time
+
+
 def start_function(update, context):
     main_menu(True, update, context)
 
 
 def message_handler_function(update, context):
+    global selected_symbol
     received_message = update.message.text
 
     if received_message in coin:
@@ -61,26 +97,10 @@ def message_handler_function(update, context):
         for i in range(len(coin)):
             if received_message == coin[i]:
                 selected_symbol = coin_symbol[i]
+                print("Selected: ", selected_symbol)
                 break
 
         select_timeframe(update, context)
-        
-        # handler = TA_Handler(
-        #     symbol = selected_symbol,
-        #     exchange = "BINANCE",
-        #     screener = "crypto",
-        #     interval = "1m"
-        # )
-        
-        # analysis = handler.get_analysis()
-        # opening = analysis.indicators["open"]
-        # closing = analysis.indicators["close"]
-        # lowest = analysis.indicators["low"]
-        # highest = analysis.indicators["high"]
-
-
-
-        # context.bot.send_message(chat_id=update.effective_chat.id, text=output)
 
     elif received_message in timeframe:
         selected_timeframe = ""
@@ -90,6 +110,40 @@ def message_handler_function(update, context):
                 selected_timeframe = time_symbol[i]
                 print(selected_timeframe)
                 break
+
+        handler = TA_Handler(
+            symbol = selected_symbol,
+            exchange = "BINANCE",
+            screener = "crypto",
+            interval = selected_timeframe
+        )
+        
+        analysis = handler.get_analysis()
+        to_time = analysis.time
+        from_time = time_calc(to_time, analysis.interval)
+        to_time = to_time.strftime("%Y/%m/%d - %H:%M:%S")
+        from_time = from_time.strftime("%Y/%m/%d - %H:%M:%S")
+        opening = analysis.indicators["open"]
+        closing = analysis.indicators["close"]
+        lowest = analysis.indicators["low"]
+        highest = analysis.indicators["high"]
+        print("#", opening, closing, lowest, highest, "#")
+
+        symbol = coin[coin_symbol.index(selected_symbol)]
+        text = f"""{symbol} to US Dollar 💰
+Symbol :  {selected_symbol}
+
+From 📅 : {from_time}
+To      📅 : {to_time}
+
+Opening price :   {opening} 💲
+Closing  price :   {closing} 💲
+Lowest  price :   {lowest} 💲
+Highest price :   {highest} 💲
+"""
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+    
     
     # if 'back' button selected
     else:
@@ -98,6 +152,8 @@ def message_handler_function(update, context):
 
 def error_handler_function(update, context):
     print(f"Update: {update} caused error: {context.error}")
+
+selected_symbol = ""
 
 coin = [
     "Bitcoin (BTC)",
@@ -158,7 +214,7 @@ my_dispatcher = updater.dispatcher
 # Adding CommandHandler from telegram.ext to handle defined functions/commands
 my_dispatcher.add_handler(CommandHandler("start", start_function))
 
-# Handing Incoming Messages
+# Handling Incoming Messages
 my_dispatcher.add_handler(MessageHandler(Filters.text, message_handler_function))
 
 # Error Handling if any
