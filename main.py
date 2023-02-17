@@ -89,15 +89,22 @@ def start_function(update, context):
 
 def message_handler_function(update, context):
     global selected_symbol
+    global broker
     received_message = update.message.text
 
     if received_message in coin:
         selected_symbol = ""
+        broker = "BINANCE"
 
         for i in range(len(coin)):
             if received_message == coin[i]:
                 selected_symbol = coin_symbol[i]
+                
+                if i in [2, 4, 6, ]:
+                    broker = "BINANCEUS"
+
                 print("Selected: ", selected_symbol)
+                print("Broker: ", broker)
                 break
 
         select_timeframe(update, context)
@@ -110,10 +117,11 @@ def message_handler_function(update, context):
                 selected_timeframe = time_symbol[i]
                 print(selected_timeframe)
                 break
+        
 
         handler = TA_Handler(
             symbol = selected_symbol,
-            exchange = "BINANCE",
+            exchange = broker,
             screener = "crypto",
             interval = selected_timeframe
         )
@@ -136,10 +144,12 @@ Symbol :  {selected_symbol}
 From 📅 : {from_time}
 To      📅 : {to_time}
 
-Opening price :   {opening} 💲
-Closing  price :   {closing} 💲
-Lowest  price :   {lowest} 💲
-Highest price :   {highest} 💲
+Opening price :   {opening} $
+Closing  price :   {closing} $
+Lowest  price :   {lowest} $
+Highest price :   {highest} $
+
+From {broker}
 """
 
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -154,6 +164,7 @@ def error_handler_function(update, context):
     print(f"Update: {update} caused error: {context.error}")
 
 selected_symbol = ""
+broker = "BINANCE"
 
 coin = [
     "Bitcoin (BTC)",
