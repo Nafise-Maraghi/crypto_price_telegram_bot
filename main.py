@@ -83,6 +83,40 @@ def time_calc(to_time, interval):
     return from_time
 
 
+def get_link(symbol):
+    if symbol == coin_symbol[0]:
+        url = "bitcoin"
+
+    elif symbol == coin_symbol[1]:
+        url = "ethereum"
+
+    elif symbol == coin_symbol[2]:
+        url = "tether"
+
+    elif symbol == coin_symbol[3]:
+        url = "bnb"
+
+    elif symbol == coin_symbol[4]:
+        url = "usd-coin"
+
+    elif symbol == coin_symbol[5]:
+        url = "xrp"
+
+    elif symbol == coin_symbol[6]:
+        url = "binance-usd"
+
+    elif symbol == coin_symbol[7]:
+        url = "cardano"
+
+    elif symbol == coin_symbol[8]:
+        url = "dogecoin"
+
+    elif symbol == coin_symbol[9]:
+        url = "solana"
+
+    return "https://www.binance.com/en/price/" + url
+
+
 def start_function(update, context):
     main_menu(True, update, context)
 
@@ -149,10 +183,12 @@ Closing  price :   {closing} $
 Lowest  price :   {lowest} $
 Highest price :   {highest} $
 
-From {broker}
+From Binance
 """
+        url = get_link(selected_symbol)
+        inline_key = [[InlineKeyboardButton("more info", url=url)]]
 
-        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text, reply_markup=InlineKeyboardMarkup(inline_key))
     
     
     # if 'back' button selected
